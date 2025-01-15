@@ -109,7 +109,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
         .bagua {
             width: 80px;
@@ -125,6 +129,25 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+        .question-section {
+            text-align: center;
+            margin-top: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 1000;
+        }
+        .question-box {
+            text-align: center;
+            padding: 20px;
+            background-color: #FFF8DC; /* 浅黄色背景 */
+            color: #8B4513; /* 深棕色文字 */
+            width: 100%;
+            box-sizing: border-box;
+            border-top: 2px solid #8B4513; /* 深棕色边框 */
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -150,16 +173,27 @@
         <div class="loading-spinner" id="loading-spinner" style="display: none;">
             <div class="bagua"></div>
         </div>
+        <!-- 提问结果 -->
+        <div id="question-results" class="markdown-content"></div>
     </main>
     <footer>
         &copy; 2025 因基玄微保留所有权利。
     </footer>
+
+    <!-- 提问模块 -->
+    <div id="question-section" class="question-box" style="display: none;">
+        <button class="button" onclick="showQuestionPrompt()">我要提问</button>
+        <p id="question-count">您还可以提问 <span id="remaining-questions">3</span> 次</p>
+    </div>
 
     <script>
         marked.setOptions({
             breaks: true,
             gfm: true
         });
+
+        let questionCount = 0;
+        const maxQuestions = 3;
 
         async function calculateBazi() {
             const baziInput = document.getElementById('bazi').value.trim();
@@ -172,6 +206,7 @@
             const resultBox = document.getElementById('result-box');
             const resultElement = document.getElementById('result');
             const loadingSpinner = document.getElementById('loading-spinner');
+            const questionSection = document.getElementById('question-section');
 
             // 显示加载动画
             resultElement.innerHTML = '';
@@ -208,10 +243,72 @@
                 // 隐藏加载动画，显示结果
                 loadingSpinner.style.display = 'none';
                 resultElement.innerHTML = marked.parse(result);
+                questionSection.style.display = 'block';
             } catch (error) {
                 // 隐藏加载动画，显示错误信息
                 loadingSpinner.style.display = 'none';
                 resultElement.innerHTML = `测算失败：${error.message}`;
+            }
+        }
+
+        function showQuestionPrompt() {
+            if (questionCount >= maxQuestions) {
+                alert('您已达到提问次数上限。');
+                return;
+            }
+
+            const question = prompt('请输入您的问题：');
+            if (question) {
+                askQuestion(question);
+            }
+        }
+
+        async function askQuestion(question) {
+            const questionResults = document.getElementById('question-results');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const remainingQuestions = document.getElementById('remaining-questions');
+
+            // 显示加载动画
+            loadingSpinner.style.display = 'flex';
+
+            const apiKey = 'sk-7b904305eb6c413eb04a3bfb0ae5805d';
+            const baseUrl = 'https://api.deepseek.com';
+
+            try {
+                const prompt = `对以下问题进行详细分析：\n问题：${question}`;
+
+                const messages = [{ role: "user", content: prompt }];
+
+                const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: messages
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`DeepSeek API 返回错误状态码：${response.status}`);
+                }
+
+                const data = await response.json();
+                const result = data.choices[0].message.content.trim();
+
+                // 隐藏加载动画，显示结果
+                loadingSpinner.style.display = 'none';
+                questionResults.innerHTML += `<div class="result-box"><h3>提问${questionCount + 1}：</h3>${marked.parse(result)}</div>`;
+                questionCount++;
+                remainingQuestions.textContent = maxQuestions - questionCount;
+            } catch (error) {
+                // 隐藏加载动画，显示错误信息
+                loadingSpinner.style.display = 'none';
+                questionResults.innerHTML += `<div class="result-box"><h3>提问${questionCount + 1}：</h3>提问失败：${error.message}</div>`;
+                questionCount++;
+                remainingQuestions.textContent = maxQuestions - questionCount;
             }
         }
     </script>
