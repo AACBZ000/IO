@@ -182,7 +182,7 @@
             const baseUrl = 'https://api.deepseek.com';
 
             try {
-                const prompt = `请对以下八字进行测算，并给出详细分析，并给出当年（现在正处于年份）的运势判定：\n八字：${baziInput}`;
+                const prompt = `请对以下八字进行测算，并给出详细分析，流年分析要展示当下时间点年份的结果：\n八字：${baziInput}`;
 
                 const messages = [{ role: "user", content: prompt }];
 
