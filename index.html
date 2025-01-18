@@ -162,28 +162,9 @@
             box-sizing: border-box;
             margin: 20px auto;
         }
-        .donation-box button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px 5px;
-            background-color: #8B4513; /* 深棕色 */
-            color: #FFF8DC; /* 浅黄色文字 */
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s;
-        }
-        .donation-box button:hover {
-            background-color: #B87333; /* 古铜色 */
-        }
         .donation-box img {
             max-width: 100%;
             border-radius: 8px;
-            cursor: pointer;
-        }
-        .donation-box img:hover {
-            filter: brightness(90%);
         }
         /* 弹幕样式 */
         .barrage {
@@ -249,9 +230,10 @@
     </div>
 
     <!-- 打赏模块 -->
-    <!-- <div class="donation-box" id="donation-box">
-        <button class="button" onclick="window.location.href='#付款:hiahia/店铺收款/001'">🎉新年快乐，求打赏！🎉</button>
-    </div> -->
+    <div class="donation-box" id="donation-box">
+        <p>🎉新年快乐，求打赏！🎉</p>
+        <img src="PAY_QRCODE.jpg" alt="收款二维码">
+    </div>
 
     <!-- 弹幕容器 -->
     <div class="barrage" id="barrage"></div>
@@ -346,7 +328,7 @@
             const baseUrl = 'https://api.deepseek.com';
 
             try {
-                const prompt = `对以下问题进行详细分析：\n问题：${question}`;
+                const prompt = `对以下问题进行详细分析（乐观积极）：\n问题：${question}`;
 
                 const messages = [{ role: "user", content: prompt }];
 
