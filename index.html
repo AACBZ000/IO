@@ -162,6 +162,21 @@
             box-sizing: border-box;
             margin: 20px auto;
         }
+        .donation-box button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: #8B4513; /* 深棕色 */
+            color: #FFF8DC; /* 浅黄色文字 */
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .donation-box button:hover {
+            background-color: #B87333; /* 古铜色 */
+        }
         .donation-box img {
             max-width: 100%;
             border-radius: 8px;
@@ -235,8 +250,7 @@
 
     <!-- 打赏模块 -->
     <div class="donation-box" id="donation-box">
-        <p>🎉新年快乐，求打赏！🎉</p>
-        <a href="#付款:hiahia/店铺收款/001"><img src="PAY_QRCODE.jpg" alt="收款二维码"></a>
+        <button class="button" onclick="window.location.href='#付款:hiahia/店铺收款/001'">🎉新年快乐，求打赏！🎉</button>
     </div>
 
     <!-- 弹幕容器 -->
