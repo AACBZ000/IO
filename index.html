@@ -149,6 +149,48 @@
             box-sizing: border-box;
             border-top: 2px solid #8B4513; /* 深棕色边框 */
         }
+        /* 打赏模块样式 */
+        .donation-box {
+            display: none;
+            background-color: #FFF8DC; /* 浅黄色背景 */
+            color: #8B4513; /* 深棕色文字 */
+            padding: 1px;
+            border: 1px solid #8B4513; /* 深棕色边框 */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 10%;
+            margin: 20px auto;
+        }
+        .donation-box img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        /* 弹幕样式 */
+        .barrage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .barrage span {
+            position: absolute;
+            white-space: nowrap;
+            color: #8B4513; /* 深棕色 */
+            font-size: 1.2em;
+            animation: move 10s linear infinite;
+        }
+        @keyframes move {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
@@ -162,6 +204,7 @@
             <form id="bazi-form">
                 <label for="bazi">农历/阳历：年月日时分</label>
                 <input type="text" id="bazi" name="bazi" placeholder="例如：农历 2000年2月初一 凌晨4点半" required style="width: 100%; padding: 8px; margin-top: 10px; margin-bottom: 20px;">
+                <small style="display: block; margin-top: -15px; color: #8B4513;">* 仅供娱乐，不采集任何信息 *</small>
                 <button type="button" class="button" onclick="calculateBazi()">提交</button>
             </form>
         </div>
@@ -185,6 +228,15 @@
         <button class="button" onclick="showQuestionPrompt()">我要提问</button>
         <p id="question-count">您还可以提问 <span id="remaining-questions">3</span> 次</p>
     </div>
+
+    <!-- 打赏模块 -->
+    <div class="donation-box" id="donation-box">
+        <p>🎉新年快乐，求打赏！🎉</p>
+        <img src="PAY_QRCODE.jpg" alt="收款二维码">
+    </div>
+
+    <!-- 弹幕容器 -->
+    <div class="barrage" id="barrage"></div>
 
     <script>
         marked.setOptions({
@@ -217,7 +269,7 @@
             const baseUrl = 'https://api.deepseek.com';
 
             try {
-                const prompt = `对以下八字进行详细分析，请确保分析是基于2025年的流年，并详细分析事业、财运、健康、感情等方面：\n八字：${baziInput}`;
+                const prompt = `对以下八字进行详细分析(正向积极基调)，请确保分析是基于2025年的流年，并详细分析事业、财运、健康、感情等方面：\n八字：${baziInput}`;
 
                 const messages = [{ role: "user", content: prompt }];
 
@@ -267,6 +319,7 @@
             const questionResults = document.getElementById('question-results');
             const loadingSpinner = document.getElementById('loading-spinner');
             const remainingQuestions = document.getElementById('remaining-questions');
+            const donationBox = document.getElementById('donation-box');
 
             // 显示加载动画
             loadingSpinner.style.display = 'flex';
@@ -303,14 +356,109 @@
                 questionResults.innerHTML += `<div class="result-box"><h3>提问${questionCount + 1}：</h3>${marked.parse(result)}</div>`;
                 questionCount++;
                 remainingQuestions.textContent = maxQuestions - questionCount;
+                if (questionCount === 1) {
+                    donationBox.style.display = 'block';
+                }
             } catch (error) {
                 // 隐藏加载动画，显示错误信息
                 loadingSpinner.style.display = 'none';
                 questionResults.innerHTML += `<div class="result-box"><h3>提问${questionCount + 1}：</h3>提问失败：${error.message}</div>`;
                 questionCount++;
                 remainingQuestions.textContent = maxQuestions - questionCount;
+                if (questionCount === 1) {
+                    donationBox.style.display = 'block';
+                }
             }
         }
+
+        // 新年祝福短句
+        const blessings = [
+            "新年快乐，万事如意！",
+            "愿你新的一年，幸福美满！",
+            "新年新气象，心想事成！",
+            "祝你新年快乐，身体健康！",
+            "愿你新年快乐，事业有成！",
+            "新年快乐，阖家幸福！",
+            "祝你新年快乐，财源广进！",
+            "愿你新年快乐，心想事成！",
+            "新年快乐，万事顺心！",
+            "祝你新年快乐，吉祥如意！",
+            "愿你新年快乐，幸福安康！",
+            "新年快乐，步步高升！",
+            "祝你新年快乐，事业腾飞！",
+            "愿你新年快乐，家庭美满！",
+            "新年快乐，心想事成！",
+            "祝你新年快乐，万事如意！",
+            "愿你新年快乐，幸福美满！",
+            "新年新气象，心想事成！",
+            "祝你新年快乐，身体健康！",
+            "愿你新年快乐，事业有成！",
+            "新年快乐，阖家幸福！",
+            "祝你新年快乐，财源广进！",
+            "愿你新年快乐，心想事成！",
+            "新年快乐，万事顺心！",
+            "祝你新年快乐，吉祥如意！",
+            "愿你新年快乐，幸福安康！",
+            "新年快乐，步步高升！",
+            "祝你新年快乐，事业腾飞！",
+            "愿你新年快乐，家庭美满！",
+            "新年快乐，心想事成！",
+            "祝你新年快乐，万事如意！",
+            "愿你新年快乐，幸福美满！",
+            "新年新气象，心想事成！",
+            "祝你新年快乐，身体健康！",
+            "愿你新年快乐，事业有成！",
+            "新年快乐，阖家幸福！",
+            "祝你新年快乐，财源广进！",
+            "愿你新年快乐，心想事成！",
+            "新年快乐，万事顺心！",
+            "祝你新年快乐，吉祥如意！",
+            "愿你新年快乐，幸福安康！",
+            "新年快乐，步步高升！",
+            "祝你新年快乐，事业腾飞！",
+            "愿你新年快乐，家庭美满！",
+            "新年快乐，心想事成！",
+            "祝你新年快乐，万事如意！",
+            "愿你新年快乐，幸福美满！",
+            "新年新气象，心想事成！",
+            "祝你新年快乐，身体健康！",
+            "愿你新年快乐，事业有成！",
+            "新年快乐，阖家幸福！",
+            "祝你新年快乐，财源广进！",
+            "愿你新年快乐，心想事成！",
+            "新年快乐，万事顺心！",
+            "祝你新年快乐，吉祥如意！",
+            "愿你新年快乐，幸福安康！",
+            "新年快乐，步步高升！",
+            "祝你新年快乐，事业腾飞！",
+            "愿你新年快乐，家庭美满！",
+            "新年快乐，心想事成！"
+        ];
+
+        let lastTop = 0;
+
+        function showBlessings() {
+            const barrage = document.getElementById('barrage');
+            const randomIndex = Math.floor(Math.random() * blessings.length);
+            const blessing = blessings[randomIndex];
+            const span = document.createElement('span');
+            span.textContent = blessing;
+
+            // 确保弹幕位置不重叠
+            let topPosition = Math.random() * (window.innerHeight - 30);
+            let leftPosition = Math.random() * (window.innerWidth - 100);
+            lastTop = topPosition;
+
+            span.style.top = `${topPosition}px`;
+            span.style.left = `${leftPosition}px`; // 随机位置
+            barrage.appendChild(span);
+
+            setTimeout(() => {
+                barrage.removeChild(span);
+            }, 10000);
+        }
+
+        setInterval(showBlessings, 1000); // 弹幕密度增加，间隔时间缩短为1秒
     </script>
 </body>
 </html>
